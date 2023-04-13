@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="EntityModel" xmlns="http://ibatis.apache.org/mapping"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <alias>
+    <!--类的别名-->
+    <typeAlias alias="User" type="MyBatisNet.Model.User"/>
+  </alias>
+
+  <resultMaps>
+    <!--User类与db表的映射-->
+    <resultMap id="SelectAllResult" class="User">
+      <result property="VC_ID" column="VC_ID"/>
+      <result property="VC_USERNAME" column="VC_USERNAME"/>
+      <result property="VC_USERPASS" column="VC_USERPASS" />
+      <result property="VC_DEPNAME" column="VC_DEPNAME"  />
+      <result property="VC_ISADMIN" column="VC_ISADMIN" />
+      <result property="VC_CID" column="VC_CID" />
+      <result property="D_CDATE" column="D_CDATE" />
+      <result property="VC_MID" column="VC_MID" />
+      <result property="D_MDATE" column="D_MDATE" />
+      <result property="VC_ISDEL" column="VC_ISDEL" />
+    </resultMap>
+  </resultMaps>
+
+  <statements>
+
+    <!--查询所有记录-->
+    <select id="SelectAllUser" resultMap="SelectAllResult">
+      <![CDATA[SELECT VC_ID, VC_USERNAME, VC_USERPASS, VC_DEPNAME, VC_ISADMIN, VC_CID, D_CDATE, VC_MID, D_MDATE, VC_ISDEL FROM T_USER]]>
+    </select>
+
+    <!--查询单条记录-->
+    <select id="SelectByUserId" parameterClass="string" resultMap="SelectAllResult" extends="SelectAllUser">
+      <![CDATA[ where VC_ID = #value#  ]]>
+    </select>
+
+    <!--查询多条记录-->
+    <select id="SelectByUserIds" parameterClass="ArrayList" resultMap="SelectAllResult" extends="SelectAllUser">
+      <![CDATA[ where VC_ID in ]]>
+      <iterate conjunction="," open="(" close=")">
+        <![CDATA[#[]#]]>
+      </iterate>
+    </select>
+
+    <!--插入新记录-->
+    <insert id="InsertUser" parameterClass="User">
+      <!--oracle sequence的示例用法-->
+      <!--<selectKey property="VC_ID" type="pre" resultClass="int">
+        select T_SEAT_SEQ.nextval as VC_ID from dual
+      </selectKey>-->
+      <![CDATA[INSERT into T_USER (VC_ID, VC_USERNAME, VC_USERPASS, VC_DEPNAME, VC_ISADMIN, VC_CID, D_CDATE, VC_MID, D_MDATE, VC_ISDEL)
+            VALUES(#VC_ID#,#VC_USERNAME#, #VC_USERPASS# , #VC_DEPNAME# , #VC_ISADMIN#, #VC_CID#, #D_CDATE#, #VC_MID#, #D_MDATE#, #VC_ISDEL#)]]>
+    </insert>
+
+    <!--更新单条记录-->
+    <update id="UpdateUser" parameterClass="User">
+      <![CDATA[Update T_USER SET VC_USERNAME=#VC_USERNAME#,
+            VC_USERPASS=#VC_USERPASS#,
+            VC_DEPNAME=#VC_DEPNAME#,
+            VC_ISADMIN=#VC_ISADMIN#
+            Where VC_ID=#VC_ID#]]>
+    </update>
+
+    <!--根据主键删除单条记录-->
+    <delete id="DeleteUserById" parameterClass="string">
+      <![CDATA[Delete From T_USER Where VC_ID=#value#]]>
+    </delete>
+
+    <!--根据主键删除多条记录-->
+    <delete id="DeleteUsersByIds" parameterClass="ArrayList">
+      <![CDATA[Delete From T_USER Where VC_ID in ]]>
+      <iterate conjunction="," open="(" close=")">
+        <![CDATA[#[]#]]>
+      </iterate>
+    </delete>
+
+
+  </statements>
+
+</sqlMap>
